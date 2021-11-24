@@ -7,12 +7,6 @@ var path = require('path');
 const crypto = require('crypto')
 let salt = 'f844b09ff50c'
 
-/*var connection = mysql.createConnection({
-  host     : 'us-cdbr-east-04.cleardb.com',
-  user     : 'b1c6c51602b5d2',
-  password : 'b1cabd07',
-  database : 'heroku_f2c1270e61b8075'
-});*/
 var connection = mysql.createPool({
   connectionLimit : 10,
   host     : 'localhost',
@@ -37,9 +31,6 @@ var usertype;
 app.use(bodyParser.urlencoded({extended : true}));
 app.use(bodyParser.json());
 
-/*app.get('/', function(request, response) {
-  response.sendFile(path.join(__dirname + '/login.html'));
-});*/
 app.post('/reg', function(request, response) {
   let hash = crypto.pbkdf2Sync(request.body.contrasenia, salt,  
         1000, 64, `sha512`).toString(`hex`);
@@ -81,6 +72,7 @@ app.post('/auth', function(request, response) {
       if (results.length > 0) {
         request.session.loggedin = true;
         request.session.correo = correo;
+        response.redirect('/dashboard');
       } else {
         response.send('Incorrect Username and/or Password!');
       }     
